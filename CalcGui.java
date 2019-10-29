@@ -1,10 +1,15 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
-public class CalcGui extends JPanel implements ActionListener {
+public class CalcGui extends JPanel implements ActionListener, MouseListener {
+	private static final int GRAY = 0;
+	private static final int WHITE = 0;
 	JButton[] numButtons = new JButton[10];
 	JButton[] alphabetButtons = new JButton[6];
 	JButton divButton, multButton, subButton, addButton, equalsButton;
@@ -12,25 +17,40 @@ public class CalcGui extends JPanel implements ActionListener {
 	JButton secButton, modButton, ceButton, clearButton, backButton, negateButton, decimalButton;
 	JLabel calcField, inputField, hexField, decField, octField, binField;
 	JButton hexLabel, decLabel, octLabel, binLabel;
-
-	JButton random;
-	int randomCount;
-
 	GridBagConstraints gbc = new GridBagConstraints();
 	Calculations c = new Calculations();
 	private int firstDigit;
 	private int exp;
 	private boolean bubble;
+	Image img, img1, img2, img3, img4, img5;
+	JButton random;
+	int randomCount;
+	Graphics gg;
 
 	public CalcGui() {
+		img = Toolkit.getDefaultToolkit().createImage("bg.jpg");
+		img1 = Toolkit.getDefaultToolkit().createImage("bg1.jpg");
+		img2 = Toolkit.getDefaultToolkit().createImage("bg2.jpg");
+		img3 = Toolkit.getDefaultToolkit().createImage("bg3.jpg");
+		img4 = Toolkit.getDefaultToolkit().createImage("bg4.jpg");
+		img5 = Toolkit.getDefaultToolkit().createImage("bg5.jpg");
+
 		randomCount = 0;
+
 		firstDigit = 0;
 		exp = 0;
 		bubble = false;
 
-		setBackground(Color.DARK_GRAY);
+		// setBackground(Color.DARK_GRAY);
 		setLayout(new GridBagLayout());
 		gbc.insets = new Insets(2, 2, 2, 2);
+
+		/***********************************/
+		random = new JButton(":)");
+		random.addActionListener(this);
+		random.addMouseListener(this);
+		setButton(random, 4, 11, gbc, 0);
+		/***************************/
 
 		secButton = new JButton("2nd");
 		modButton = new JButton("Mod");
@@ -38,10 +58,15 @@ public class CalcGui extends JPanel implements ActionListener {
 		clearButton = new JButton("C");
 		backButton = new JButton("\u00AB");
 		secButton.addActionListener(this);
+		secButton.addMouseListener(this);
 		modButton.addActionListener(this);
+		modButton.addMouseListener(this);
 		ceButton.addActionListener(this);
+		ceButton.addMouseListener(this);
 		clearButton.addActionListener(this);
+		clearButton.addMouseListener(this);
 		backButton.addActionListener(this);
+		backButton.addMouseListener(this);
 		setButton(secButton, 0, 7, gbc, 0);
 		setButton(modButton, 1, 7, gbc, 0);
 		setButton(ceButton, 2, 7, gbc, 0);
@@ -50,43 +75,47 @@ public class CalcGui extends JPanel implements ActionListener {
 
 		leftPButton = new JButton("(");
 		leftPButton.addActionListener(this);
+		leftPButton.addMouseListener(this);
 		setButton(leftPButton, 0, 11, gbc, 0);
 		rightPButton = new JButton(")");
 		rightPButton.addActionListener(this);
+		rightPButton.addMouseListener(this);
 		setButton(rightPButton, 1, 11, gbc, 0);
 
 		negateButton = new JButton("+/-");
 		negateButton.addActionListener(this);
+		negateButton.addMouseListener(this);
 		setButton(negateButton, 2, 11, gbc, 0);
 
 		for (int i = 8; i < 13; i++) {
 			if (i == 8) {
 				divButton = new JButton("\u00F7");
 				divButton.addActionListener(this);
+				divButton.addMouseListener(this);
 				setButton(divButton, 5, 7, gbc, 0);
 			} else if (i == 9) {
 				multButton = new JButton("X");
 				multButton.addActionListener(this);
+				multButton.addMouseListener(this);
 				setButton(multButton, 5, 8, gbc, 0);
 			} else if (i == 10) {
 				subButton = new JButton("-");
 				subButton.addActionListener(this);
+				subButton.addMouseListener(this);
 				setButton(subButton, 5, 9, gbc, 0);
 			} else if (i == 11) {
 				addButton = new JButton("+");
 				addButton.addActionListener(this);
+				addButton.addMouseListener(this);
 				setButton(addButton, 5, 10, gbc, 0);
 			} else if (i == 12) {
 				equalsButton = new JButton("=");
 				equalsButton.addActionListener(this);
+				equalsButton.addMouseListener(this);
 				setButton(equalsButton, 5, 11, gbc, 0);
 			}
 		}
-		/***********************************/
-		random = new JButton(":)");
-		random.addActionListener(this);
-		setButton(random, 4, 11, gbc, 0);
-		/***************************/
+
 		int col = 0;
 		int row = 8;
 		char c = 65;
@@ -111,6 +140,7 @@ public class CalcGui extends JPanel implements ActionListener {
 				col++;
 			}
 			alphabetButtons[i].addActionListener(this);
+			alphabetButtons[i].addMouseListener(this);
 		}
 		hideLetters(alphabetButtons, 1);
 
@@ -123,6 +153,7 @@ public class CalcGui extends JPanel implements ActionListener {
 			}
 			numButtons[i] = new JButton(String.valueOf(i));
 			numButtons[i].addActionListener(this);
+			numButtons[i].addMouseListener(this);
 			if (i >= 7 && i <= 9) {
 				setButton(numButtons[i], col, row, gbc, 0);
 				col++;
@@ -142,9 +173,13 @@ public class CalcGui extends JPanel implements ActionListener {
 		octLabel = new JButton("Oct ");
 		binLabel = new JButton("Bin ");
 		hexLabel.addActionListener(this);
+		hexLabel.addMouseListener(this);
 		decLabel.addActionListener(this);
+		decLabel.addMouseListener(this);
 		octLabel.addActionListener(this);
+		octLabel.addMouseListener(this);
 		binLabel.addActionListener(this);
+		binLabel.addMouseListener(this);
 		setButton(hexLabel, 0, 2, gbc, 1);
 		setButton(decLabel, 0, 3, gbc, 1);
 		setButton(octLabel, 0, 4, gbc, 1);
@@ -154,21 +189,37 @@ public class CalcGui extends JPanel implements ActionListener {
 
 		calcField = new JLabel("", SwingConstants.RIGHT);
 		inputField = new JLabel("0", SwingConstants.RIGHT);
-		hexField = new JLabel("", SwingConstants.LEFT);
-		decField = new JLabel("", SwingConstants.LEFT);
-		octField = new JLabel("", SwingConstants.LEFT);
-		binField = new JLabel("", SwingConstants.LEFT);
-		inputField.setBorder(BorderFactory.createLineBorder(Color.white, 5));
-		setLabel(calcField, 0, 0, gbc, 6, 20);
-		setLabel(inputField, 0, 1, gbc, 6, 50);
+		hexField = new JLabel("0", SwingConstants.LEFT);
+		decField = new JLabel("0", SwingConstants.LEFT);
+		octField = new JLabel("0", SwingConstants.LEFT);
+		binField = new JLabel("0", SwingConstants.LEFT);
+		inputField.setBorder(BorderFactory.createLineBorder(Color.white, 4));
+		setLabel(calcField, 0, 0, gbc, 6, 15);
+		setLabel(inputField, 0, 1, gbc, 6, 35);
 		setLabel(hexField, 1, 2, gbc, 5, 20);
 		setLabel(decField, 1, 3, gbc, 5, 20);
 		setLabel(octField, 1, 4, gbc, 5, 20);
 		setLabel(binField, 1, 5, gbc, 5, 20);
 	}
 
+	public void paintComponent(Graphics g) {
+		if (randomCount == 0) {
+			g.drawImage(img, 0, 0, this);
+		} else if (randomCount == 1) {
+			g.drawImage(img1, 0, 0, this);
+		} else if (randomCount == 2) {
+			g.drawImage(img2, 0, 0, this);
+		} else if (randomCount == 3) {
+			g.drawImage(img3, 0, 0, this);
+		} else if (randomCount == 4) {
+			g.drawImage(img4, 0, 0, this);
+		} else if (randomCount == 5) {
+			g.drawImage(img5, 0, 0, this);
+		}
+	}
+
 	public void setLabel(JLabel label, int x, int y, GridBagConstraints gbc, int width, int font) {
-		label.setPreferredSize(new Dimension(80, 80));
+		label.setPreferredSize(new Dimension(55, 55));
 		label.setFont(new Font("Arial", Font.BOLD, font));
 		label.setForeground(Color.white);
 		gbc.gridx = x;
@@ -179,16 +230,19 @@ public class CalcGui extends JPanel implements ActionListener {
 	}
 
 	public void setButton(JButton b, int x, int y, GridBagConstraints gbc, int n) {
-		b.setPreferredSize(new Dimension(80, 80));
-		b.setFont(new Font("Arial", Font.BOLD, 20));
+		Color c = new Color(255,255,255);
+		b.setPreferredSize(new Dimension(55, 55));
+		b.setFont(new Font("Arial", Font.BOLD, 18));
+		/****/
+		b.setOpaque(false);
+		b.setContentAreaFilled(false);
+		/*****/
 		if (n == 1) {
-			b.setBackground(Color.DARK_GRAY);
-			b.setForeground(Color.white);
+			b.setForeground(c);
 			b.setBorder(null);
 		} else {
-			b.setBackground(Color.black);
-			b.setForeground(Color.white);
-			b.setBorder(new LineBorder(Color.white));
+			b.setForeground(c);
+			b.setBorder(new LineBorder(c));
 		}
 		b.setFocusPainted(false);
 		gbc.gridx = x;
@@ -199,173 +253,180 @@ public class CalcGui extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		if (e.getSource() == numButtons[0] || e.getSource() == numButtons[1] || e.getSource() == numButtons[2]
-				|| e.getSource() == numButtons[3] || e.getSource() == numButtons[4] || e.getSource() == numButtons[5]
-				|| e.getSource() == numButtons[6] || e.getSource() == numButtons[7] || e.getSource() == numButtons[8]
-				|| e.getSource() == numButtons[9]) {
-			for (int i = 0; i < 10; i++) {
-				if (c.getInput().length() < 17) {
-					if (e.getSource() == numButtons[i]) {
-						if (c.getDec() || c.getHex()) {
-							getDigits(numButtons, i);
-						} else if (c.getOct()) {
-							if (!numButtons[i].getText().contentEquals("8")
-									|| !numButtons[i].getText().contentEquals("8")) {
-								getDigits(numButtons, i);
-							}
-						} else if (c.getBin()) {
-							if (numButtons[i].getText().contentEquals("1")
-									|| numButtons[i].getText().contentEquals("0"))
-								getDigits(numButtons, i);
-						}
-
-						inputField.setText(c.getInput());
-					}
-				}
-			}
-		} else {
-			if ((e.getSource() == alphabetButtons[0] || e.getSource() == alphabetButtons[1]
-					|| e.getSource() == alphabetButtons[2] || e.getSource() == alphabetButtons[3]
-					|| e.getSource() == alphabetButtons[4] || e.getSource() == alphabetButtons[5]
-					|| e.getSource() == alphabetButtons[5]) && c.getHex()) {
-				for (int i = 0; i < 6; i++) {
+		try {
+			if (e.getSource() == numButtons[0] || e.getSource() == numButtons[1] || e.getSource() == numButtons[2]
+					|| e.getSource() == numButtons[3] || e.getSource() == numButtons[4]
+					|| e.getSource() == numButtons[5] || e.getSource() == numButtons[6]
+					|| e.getSource() == numButtons[7] || e.getSource() == numButtons[8]
+					|| e.getSource() == numButtons[9]) {
+				for (int i = 0; i < 10; i++) {
 					if (c.getInput().length() < 17) {
-						if (e.getSource() == alphabetButtons[i]) {
-							if (c.getInput().contentEquals("0")) {
-								c.setInput("");
-								c.storeInput(alphabetButtons[i].getText());
-								firstDigit++;
-							} else {
-								c.storeInput(alphabetButtons[i].getText());
+						if (e.getSource() == numButtons[i]) {
+							if (c.getDec() || c.getHex()) {
+								getDigits(numButtons, i);
+							} else if (c.getOct()) {
+								if (!numButtons[i].getText().contentEquals("8")
+										|| !numButtons[i].getText().contentEquals("8")) {
+									getDigits(numButtons, i);
+								}
+							} else if (c.getBin()) {
+								if (numButtons[i].getText().contentEquals("1")
+										|| numButtons[i].getText().contentEquals("0"))
+									getDigits(numButtons, i);
 							}
+
+							inputField.setText(c.getInput());
+							updateConversion(c.getInput());
 						}
 					}
 				}
-				inputField.setText(c.getInput());
+			} else {
+				if ((e.getSource() == alphabetButtons[0] || e.getSource() == alphabetButtons[1]
+						|| e.getSource() == alphabetButtons[2] || e.getSource() == alphabetButtons[3]
+						|| e.getSource() == alphabetButtons[4] || e.getSource() == alphabetButtons[5]
+						|| e.getSource() == alphabetButtons[5]) && c.getHex()) {
+					for (int i = 0; i < 6; i++) {
+						if (c.getInput().length() < 17) {
+							if (e.getSource() == alphabetButtons[i]) {
+								if (c.getInput().contentEquals("0")) {
+									c.setInput("");
+									c.storeInput(alphabetButtons[i].getText());
+									firstDigit++;
+								} else {
+									c.storeInput(alphabetButtons[i].getText());
+									firstDigit++;
+								}
+							}
+						}
+					}
+					inputField.setText(c.getInput());
+					updateConversion(c.getInput());
+				}
 			}
-		}
 
-		if (e.getSource() == clearButton) {
-			c.setCalc("");
-			c.setInput("0");
-			c.setOperator("");
-			c.setPrevInput("0");
-			c.setResult("0");
-			c.setEquals(false);
-			bubble = false;
-			firstDigit = 0;
-			exp = 0;
-			calcField.setText("");
-			inputField.setText("0");
-		} else if (e.getSource() == ceButton) {
-			c.setInput("0");
-			firstDigit = 0;
-			inputField.setText("0");
-		} else if (e.getSource() == backButton) {
-			String tempStr = c.getInput().substring(0, c.getInput().length() - 1);
-			if (tempStr.contentEquals("")) {
+			if (e.getSource() == clearButton) {
+				c.setCalc("");
 				c.setInput("0");
-			} else {
-				c.setInput(tempStr);
+				c.setOperator("");
+				c.setPrevInput("0");
+				c.setResult("0");
+				c.setEquals(false);
+				bubble = false;
+				firstDigit = 0;
+				exp = 0;
+				calcField.setText("");
+				inputField.setText("0");
+				hexField.setText("0");
+				decField.setText("0");
+				binField.setText("0");
+				octField.setText("0");
+			} else if (e.getSource() == ceButton) {
+				c.setInput("0");
+				updateConversion(c.getInput());
+				firstDigit = 0;
+				inputField.setText("0");
+			} else if (e.getSource() == backButton) {
+				String tempStr = c.getInput().substring(0, c.getInput().length() - 1);
+				if (tempStr.contentEquals("")) {
+					c.setInput("0");
+					firstDigit = 0;
+				} else {
+					c.setInput(tempStr);
+				}
+				updateConversion(c.getInput());
+				inputField.setText(c.getInput());
+			} else if (e.getSource() == negateButton) {
+				c.performCalc("+/-");
+				inputField.setText(c.getInput());
+			} else if (e.getSource() == leftPButton && bubble == false) {
+				c.storeCalc("(");
+				calcField.setText(c.getCalc());
+				bubble = true;
+			} else if (e.getSource() == rightPButton && bubble == true) {
+				c.storeCalc(c.getInput());
+				c.storeCalc(")");
+				equals();
 			}
-			inputField.setText(c.getInput());
-		} else if (e.getSource() == negateButton) {
-			c.performCalc("+/-");
-			inputField.setText(c.getInput());
-		} else if (e.getSource() == leftPButton && bubble == false) {
-			c.storeCalc("(");
-			calcField.setText(c.getCalc());
-			bubble = true;
-		} else if (e.getSource() == rightPButton && bubble == true) {
-			c.storeCalc(c.getInput());
-			c.storeCalc(")");
-			equals();
-		}
-		if (e.getSource() == equalsButton) {
-			equals();
-			exp = 0;
-			firstDigit = 0;
-		} else if (e.getSource() == addButton) {
-			doMath("+");
-			c.setEquals(false);
-			exp++;
-			firstDigit = 0;
-		} else if (e.getSource() == divButton) {
-			doMath("/");
-			c.setEquals(false);
-			exp++;
-			firstDigit = 0;
-		} else if (e.getSource() == multButton) {
-			doMath("*");
-			c.setEquals(false);
-			exp++;
-			firstDigit = 0;
-		} else if (e.getSource() == subButton) {
-			doMath("-");
-			c.setEquals(false);
-			exp++;
-			firstDigit = 0;
-		} else if (e.getSource() == modButton) {
-			doMath("%");
-			c.setEquals(false);
-			exp++;
-			firstDigit = 0;
-		} else if (e.getSource() == modButton) {
-			doMath("%");
-			c.setEquals(false);
-			exp++;
-			firstDigit = 0;
-		}
+			if (e.getSource() == equalsButton) {
+				equals();
+				exp = 0;
+				firstDigit = 0;
+			} else if (e.getSource() == addButton) {
+				doMath("+");
+				c.setEquals(false);
+				exp++;
+				firstDigit = 0;
+			} else if (e.getSource() == divButton) {
+				doMath("/");
+				c.setEquals(false);
+				exp++;
+				firstDigit = 0;
+			} else if (e.getSource() == multButton) {
+				doMath("*");
+				c.setEquals(false);
+				exp++;
+				firstDigit = 0;
+			} else if (e.getSource() == subButton) {
+				doMath("-");
+				c.setEquals(false);
+				exp++;
+				firstDigit = 0;
+			} else if (e.getSource() == modButton) {
+				doMath("%");
+				c.setEquals(false);
+				exp++;
+				firstDigit = 0;
+			} else if (e.getSource() == modButton) {
+				doMath("%");
+				c.setEquals(false);
+				exp++;
+				firstDigit = 0;
+			}
 
-		if (e.getSource() == hexLabel) {
-			clickedLabel(hexLabel, decLabel, octLabel, binLabel, 1);
-		} else if (e.getSource() == decLabel) {
-			clickedLabel(hexLabel, decLabel, octLabel, binLabel, 2);
-		} else if (e.getSource() == octLabel) {
-			clickedLabel(hexLabel, decLabel, octLabel, binLabel, 3);
-		} else if (e.getSource() == binLabel) {
-			clickedLabel(hexLabel, decLabel, octLabel, binLabel, 4);
-		}
-		/***********************************/
-		if (e.getSource() == random) {
-			if (randomCount == 0) {
-				calcField.setText("Hey, please don't press me again.");
-			} else if (randomCount == 1) {
-				calcField.setText("Come on please don't do dat!");
-				random.setText(":|");
-			} else if (randomCount == 1) {
-				calcField.setText("i swearrrrrr if you do it one more time");
-				random.setText(":<");
-			} else if (randomCount == 2) {
-				calcField.setText("I'll screammmm");
-				random.setText(">:(");
-			} else if (randomCount == 3) {
-				random.setText(">:o");
-				JOptionPane.showMessageDialog(this, "Reeeeeeeeeeeeeeeeeee", "WARNING", JOptionPane.WARNING_MESSAGE);
-			} else if (randomCount == 4) {
-				calcField.setText("Yea bet you won't click me again");
-				random.setText(";)");
-			} else if (randomCount == 5) {
-				calcField.setText("ok you're actually wasting time so please don't");
-				random.setText(":>");
-			} else if (randomCount == 6) {
-				calcField.setText("are you that bored??");
-				random.setText("?");
-			} else if (randomCount == 7) {
-				calcField.setText("like you should get back to studying or something");
-				random.setText("0_0");
-			} else if (randomCount == 8) {
-				calcField.setText("i actually wasted so much time doing this xd");
-				random.setText(":\")");
-			} else if (randomCount == 9) {
-				JOptionPane.showInputDialog(this, "Please tell me if my calc is good thx :)");
-				calcField.setText("I can't read this lol");
-				random.setText("1more");
-			} else {
-				JOptionPane.showMessageDialog(this, "Imma close you off now");
-				this.setVisible(false);
+			if (e.getSource() == hexLabel) {
+				clickedLabel(hexLabel, decLabel, octLabel, binLabel, 1);
+			} else if (e.getSource() == decLabel) {
+				clickedLabel(hexLabel, decLabel, octLabel, binLabel, 2);
+			} else if (e.getSource() == octLabel) {
+				clickedLabel(hexLabel, decLabel, octLabel, binLabel, 3);
+			} else if (e.getSource() == binLabel) {
+				clickedLabel(hexLabel, decLabel, octLabel, binLabel, 4);
 			}
-			randomCount++;
+
+			/************/
+			if (e.getSource() == random) {
+				repaint();
+				randomCount++;
+				if (randomCount == 6)
+					randomCount = 0;
+			}
+			/*************/
+		} catch (Exception e1) {
+
+		}
+	}
+
+	public void updateConversion(String s) {
+		if (c.getHex()) {
+			decField.setText(c.getConversion(s, "hex", "dec"));
+			binField.setText(c.getConversion(s, "hex", "bin"));
+			octField.setText(c.getConversion(s, "hex", "oct"));
+			hexField.setText(s);
+		} else if (c.getDec()) {
+			binField.setText(c.getConversion(s, "dec", "bin"));
+			hexField.setText(c.getConversion(s, "dec", "hex"));
+			octField.setText(c.getConversion(s, "dec", "oct"));
+			decField.setText(s);
+		} else if (c.getOct()) {
+			binField.setText(c.getConversion(s, "oct", "bin"));
+			hexField.setText(c.getConversion(s, "oct", "hex"));
+			decField.setText(c.getConversion(s, "oct", "dec"));
+			octField.setText(s);
+		} else if (c.getBin()) {
+			decField.setText(c.getConversion(s, "bin", "dec"));
+			hexField.setText(c.getConversion(s, "bin", "hex"));
+			octField.setText(c.getConversion(s, "bin", "oct"));
+			binField.setText(s);
 		}
 	}
 
@@ -387,6 +448,11 @@ public class CalcGui extends JPanel implements ActionListener {
 			d.setBorder(null);
 			o.setBorder(null);
 			b.setBorder(null);
+			try {
+				c.setInput(hexField.getText());
+				inputField.setText(c.getInput());
+			} catch (Exception e2) {
+			}
 			c.setHex(true);
 			c.setDec(false);
 			c.setOct(false);
@@ -398,6 +464,11 @@ public class CalcGui extends JPanel implements ActionListener {
 			d.setBorder(BorderFactory.createBevelBorder(0, Color.black, Color.white));
 			o.setBorder(null);
 			b.setBorder(null);
+			try {
+				c.setInput(decField.getText());
+				inputField.setText(c.getInput());
+			} catch (Exception e2) {
+			}
 			c.setHex(false);
 			c.setDec(true);
 			c.setOct(false);
@@ -409,6 +480,11 @@ public class CalcGui extends JPanel implements ActionListener {
 			d.setBorder(null);
 			o.setBorder(BorderFactory.createBevelBorder(0, Color.black, Color.white));
 			b.setBorder(null);
+			try {
+				c.setInput(octField.getText());
+				inputField.setText(c.getInput());
+			} catch (Exception e2) {
+			}
 			c.setHex(false);
 			c.setDec(false);
 			c.setOct(true);
@@ -420,6 +496,11 @@ public class CalcGui extends JPanel implements ActionListener {
 			d.setBorder(null);
 			o.setBorder(null);
 			b.setBorder(BorderFactory.createBevelBorder(0, Color.black, Color.white));
+			try {
+				c.setInput(binField.getText());
+				inputField.setText(c.getInput());
+			} catch (Exception e2) {
+			}
 			c.setHex(false);
 			c.setDec(false);
 			c.setOct(false);
@@ -430,43 +511,44 @@ public class CalcGui extends JPanel implements ActionListener {
 	}
 
 	public void hideLetters(JButton b[], int value) {
+		Color c1 = new Color(255,255,255);
+		Color c2 = new Color(153,153,153);
 		if (value == 0) {
 			for (int i = 0; i < 6; i++) {
-				b[i].setForeground(Color.WHITE);
-				b[i].setBackground(Color.BLACK);
+				b[i].setForeground(c1);
+				b[i].setBorder(new LineBorder(c1));
 			}
 		} else {
 			for (int i = 0; i < 6; i++) {
-				b[i].setForeground(Color.LIGHT_GRAY);
-				b[i].setBackground(Color.GRAY);
+				b[i].setForeground(c2);
 			}
 		}
 	}
 
 	public void hideNumbers(JButton b[], int value, int oct, int bin) {
+		Color c1 = new Color(255,255,255);
+		Color c2 = new Color(153,153,153);
 		if (value == 0 && oct == 0 && bin == 0) {
 			for (int i = 0; i < 10; i++) {
-				b[i].setForeground(Color.WHITE);
-				b[i].setBackground(Color.BLACK);
+				b[i].setForeground(c1);
+				b[i].setBorder(new LineBorder(c1));
 			}
 		} else if (value == 1 && oct == 1) {
 			for (int i = 0; i < 10; i++) {
 				if (i < 8) {
-					b[i].setForeground(Color.WHITE);
-					b[i].setBackground(Color.BLACK);
+					b[i].setForeground(c1);
+					b[i].setBorder(new LineBorder(c1));
 				} else {
-					b[i].setForeground(Color.LIGHT_GRAY);
-					b[i].setBackground(Color.GRAY);
+					b[i].setForeground(c2);
 				}
 			}
 		} else if (value == 1 && bin == 1) {
 			for (int i = 0; i < 10; i++) {
 				if (i < 2) {
-					b[i].setForeground(Color.WHITE);
-					b[i].setBackground(Color.BLACK);
+					b[i].setForeground(c1);
+					b[i].setBorder(new LineBorder(c1));
 				} else {
-					b[i].setForeground(Color.LIGHT_GRAY);
-					b[i].setBackground(Color.GRAY);
+					b[i].setForeground(c2);
 				}
 			}
 		}
@@ -484,13 +566,26 @@ public class CalcGui extends JPanel implements ActionListener {
 			c.setPrevInput(c.getInput());
 			c.setInput("");
 		} else {
-			c.performCalc(c.getOperator());
-			c.setOperator(op);
-			c.storeCalc(c.getInput());
-			c.storeCalc(op);
-			c.setPrevInput(c.getResult());
-			c.setInput("");
-			inputField.setText(c.getResult());
+			if (c.getBin()) {
+				c.performCalc(c.getOperator());
+				c.setOperator(op);
+				c.storeCalc(c.getInput());
+				c.storeCalc(op);
+				c.setPrevInput(c.getResult());
+				c.setInput("");
+				inputField.setText(c.getResult());
+				updateConversion(c.getResult());
+			} else if (c.getDec()) {
+				c.performCalc(c.getOperator());
+				c.setOperator(op);
+				c.storeCalc(c.getInput());
+				c.storeCalc(op);
+				c.setPrevInput(c.getResult());
+				c.setInput("");
+				inputField.setText(c.getResult());
+				updateConversion(c.getResult());
+			}
+
 		}
 		calcField.setText(c.getCalc());
 	}
@@ -500,5 +595,116 @@ public class CalcGui extends JPanel implements ActionListener {
 		c.setCalc("");
 		calcField.setText("");
 		inputField.setText(c.getResult());
+		updateConversion(c.getResult());
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		Color c = new Color(143, 200, 220);
+		for (int i = 0; i < 10; i++) {
+			if (e.getSource() == numButtons[i]) {
+				numButtons[i].setBorder(BorderFactory.createLineBorder(c, 3));
+			}
+			if (i < 6) {
+				if (e.getSource() == alphabetButtons[i]) {
+					alphabetButtons[i].setBorder(BorderFactory.createLineBorder(c, 3));
+				}
+			}
+		}
+		if (e.getSource() == secButton) {
+			secButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == modButton) {
+			modButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == ceButton) {
+			ceButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == clearButton) {
+			clearButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == addButton) {
+			addButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == multButton) {
+			multButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == subButton) {
+			subButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == addButton) {
+			addButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == negateButton) {
+			negateButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == rightPButton) {
+			rightPButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == leftPButton) {
+			leftPButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == divButton) {
+			divButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == equalsButton) {
+			equalsButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == backButton) {
+			backButton.setBorder(BorderFactory.createLineBorder(c, 3));
+		} else if (e.getSource() == random) {
+			random.setBorder(BorderFactory.createLineBorder(c, 3));
+		}
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		Color c = new Color(255, 255, 255);
+		for (int i = 0; i < 10; i++) {
+			if (e.getSource() == numButtons[i]) {
+				numButtons[i].setBorder(BorderFactory.createLineBorder(c));
+			}
+			if (i < 6) {
+				if (e.getSource() == alphabetButtons[i]) {
+					alphabetButtons[i].setBorder(BorderFactory.createLineBorder(c));
+				}
+			}
+		}
+		if (e.getSource() == secButton) {
+			secButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == backButton) {
+			backButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == modButton) {
+			modButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == ceButton) {
+			ceButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == divButton) {
+			divButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == equalsButton) {
+			equalsButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == clearButton) {
+			clearButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == addButton) {
+			addButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == multButton) {
+			multButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == subButton) {
+			subButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == addButton) {
+			addButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == negateButton) {
+			negateButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == rightPButton) {
+			rightPButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == leftPButton) {
+			leftPButton.setBorder(BorderFactory.createLineBorder(c));
+		} else if (e.getSource() == random) {
+			random.setBorder(BorderFactory.createLineBorder(c));
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }
