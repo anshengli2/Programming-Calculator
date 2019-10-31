@@ -111,7 +111,7 @@ public class Calculations {
 	}
 
 	public void setEquals(boolean b) {
-		equals = false;
+		equals = b;
 	}
 
 	public boolean getEquals() {
@@ -121,67 +121,57 @@ public class Calculations {
 	public String getResult() {
 		if (dec) {
 			stringResult = String.valueOf(result);
-		}
-		else if(bin) {
+		} else if (bin) {
 			stringResult = Long.toBinaryString(result);
-		}
-		else if(oct) {
+		} else if (oct) {
 			stringResult = Long.toOctalString(result);
-		}
-		else if(hex) {
+		} else if (hex) {
 			stringResult = Long.toHexString(result);
+			stringResult = stringResult.toUpperCase();
 		}
-
 		return stringResult;
 	}
+
 	public String getConversion(String s, String base, String newBase) {
 		Long temp = 0L;
 		String tempStr = "";
-		if(base.contentEquals("hex")) {
-			temp = Long.parseLong(s,16);
-			if(newBase.contentEquals("dec")) {
+		if (base.contentEquals("hex")) {
+			temp = Long.parseLong(s, 16);
+			if (newBase.contentEquals("dec")) {
 				tempStr = String.valueOf(temp);
-			}
-			else if(newBase.contentEquals("bin")) {
+			} else if (newBase.contentEquals("bin")) {
 				tempStr = Long.toBinaryString(temp);
-			}
-			else if(newBase.contentEquals("oct")) {
+			} else if (newBase.contentEquals("oct")) {
 				tempStr = Long.toOctalString(temp);
 			}
-		}
-		else if(base.contentEquals("dec")) {
+		} else if (base.contentEquals("dec")) {
 			temp = Long.parseLong(s);
-			if(newBase.contentEquals("hex")) {
+			if (newBase.contentEquals("hex")) {
 				tempStr = Long.toHexString(temp);
-			}
-			else if(newBase.contentEquals("bin")) {
+				tempStr = tempStr.toUpperCase();
+			} else if (newBase.contentEquals("bin")) {
 				tempStr = Long.toBinaryString(temp);
-			}
-			else if(newBase.contentEquals("oct")) {
+			} else if (newBase.contentEquals("oct")) {
 				tempStr = Long.toOctalString(temp);
 			}
-		}
-		else if(base.contentEquals("oct")) {
-			temp = Long.parseLong(s,8);
-			if(newBase.contentEquals("dec")) {
+		} else if (base.contentEquals("oct")) {
+			temp = Long.parseLong(s, 8);
+			if (newBase.contentEquals("dec")) {
 				tempStr = String.valueOf(temp);
-			}
-			else if(newBase.contentEquals("bin")) {
+			} else if (newBase.contentEquals("bin")) {
 				tempStr = Long.toBinaryString(temp);
-			}
-			else if(newBase.contentEquals("hex")) {
+			} else if (newBase.contentEquals("hex")) {
 				tempStr = Long.toHexString(temp);
+				tempStr = tempStr.toUpperCase();
 			}
-		}
-		else if(base.contentEquals("bin")) {
-			temp = Long.parseLong(s,2);
-			if(newBase.contentEquals("dec")) {
+		} else if (base.contentEquals("bin")) {
+			temp = Long.parseLong(s, 2);
+			if (newBase.contentEquals("dec")) {
 				tempStr = String.valueOf(temp);
-			}
-			else if(newBase.contentEquals("hex")) {
+			} else if (newBase.contentEquals("hex")) {
 				tempStr = Long.toHexString(temp);
-			}
-			else if(newBase.contentEquals("oct")) {
+				tempStr = tempStr.toUpperCase();
+			} else if (newBase.contentEquals("oct")) {
 				tempStr = Long.toOctalString(temp);
 			}
 		}
@@ -194,75 +184,98 @@ public class Calculations {
 				result = Long.parseLong(prevInput) + Long.parseLong(input);
 			} else if (op.contentEquals("-")) {
 				result = Long.parseLong(prevInput) - Long.parseLong(input);
-			} else if (op.contentEquals("*")) {
+			} else if (op.contentEquals("\u00D7")) {
 				result = Long.parseLong(prevInput) * Long.parseLong(input);
-			} else if (op.contentEquals("/")) {
+			} else if (op.contentEquals("\u00F7")) {
 				result = Long.parseLong(prevInput) / Long.parseLong(input);
-			} else if (op.contentEquals("%")) {
+			} else if (op.contentEquals("Mod")) {
 				result = Long.parseLong(prevInput) % Long.parseLong(input);
 			} else if (op.contentEquals("+/-")) {
-				input = String.valueOf("" + (-1 * Long.parseLong(input)));
+				if (input.isEmpty() && !stringResult.isEmpty()) {
+					input = String.valueOf("" + (-1 * Long.parseLong(stringResult)));
+				} else {
+					input = String.valueOf("" + (-1 * Long.parseLong(input)));
+				}
 			}
 		} else if (hex) {
 			if (op.contentEquals("+")) {
-				result = Long.parseLong(prevInput,16) + Long.parseLong(input,16);
+				result = Long.parseLong(prevInput, 16) + Long.parseLong(input, 16);
 			} else if (op.contentEquals("-")) {
-				result = Long.parseLong(prevInput,16) - Long.parseLong(input,16);
-			} else if (op.contentEquals("*")) {
-				result = Long.parseLong(prevInput,16) * Long.parseLong(input,16);
-			} else if (op.contentEquals("/")) {
-				result = Long.parseLong(prevInput,16) / Long.parseLong(input,16);
-			} else if (op.contentEquals("%")) {
-				result = Long.parseLong(prevInput,16) % Long.parseLong(input,16);
+				result = Long.parseLong(prevInput, 16) - Long.parseLong(input, 16);
+			} else if (op.contentEquals("\u00D7")) {
+				result = Long.parseLong(prevInput, 16) * Long.parseLong(input, 16);
+			} else if (op.contentEquals("\u00F7")) {
+				result = Long.parseLong(prevInput, 16) / Long.parseLong(input, 16);
+			} else if (op.contentEquals("Mod")) {
+				result = Long.parseLong(prevInput, 16) % Long.parseLong(input, 16);
 			} else if (op.contentEquals("+/-")) {
-				result = -1 * Long.parseLong(input,16);
+				if (input.isEmpty() && !stringResult.isEmpty()) {
+					result = -1 * Long.parseLong(stringResult, 16);
+				} else {
+					result = -1 * Long.parseLong(input, 16);
+				}
 				input = getResult();
 			}
 		} else if (oct) {
 			if (op.contentEquals("+")) {
-				result = Long.parseLong(prevInput,8) + Long.parseLong(input,8);
+				result = Long.parseLong(prevInput, 8) + Long.parseLong(input, 8);
 			} else if (op.contentEquals("-")) {
-				result = Long.parseLong(prevInput,8) - Long.parseLong(input,8);
-			} else if (op.contentEquals("*")) {
-				result = Long.parseLong(prevInput,8) * Long.parseLong(input,8);
-			} else if (op.contentEquals("/")) {
-				result = Long.parseLong(prevInput,8) / Long.parseLong(input,8);
-			} else if (op.contentEquals("%")) {
-				result = Long.parseLong(prevInput,8) % Long.parseLong(input,8);
+				result = Long.parseLong(prevInput, 8) - Long.parseLong(input, 8);
+			} else if (op.contentEquals("\u00D7")) {
+				result = Long.parseLong(prevInput, 8) * Long.parseLong(input, 8);
+			} else if (op.contentEquals("\u00F7")) {
+				result = Long.parseLong(prevInput, 8) / Long.parseLong(input, 8);
+			} else if (op.contentEquals("Mod")) {
+				result = Long.parseLong(prevInput, 8) % Long.parseLong(input, 8);
 			} else if (op.contentEquals("+/-")) {
-				input = String.valueOf("" + (-1 * Long.parseLong(input)));
-			}	
+				if (input.isEmpty() && !stringResult.isEmpty()) {
+					result = -1 * Long.parseLong(stringResult, 8);
+				} else {
+					result = -1 * Long.parseLong(input, 8);
+				}
+				input = getResult();
+			}
 		} else if (bin) {
 			if (op.contentEquals("+")) {
-				result = Long.parseLong(prevInput,2) + Long.parseLong(input,2);
+				result = Long.parseLong(prevInput, 2) + Long.parseLong(input, 2);
 			} else if (op.contentEquals("-")) {
-				result = Long.parseLong(prevInput,2) - Long.parseLong(input,2);
-			} else if (op.contentEquals("*")) {
-				result = Long.parseLong(prevInput,2) * Long.parseLong(input,2);
-			} else if (op.contentEquals("/")) {
-				result = Long.parseLong(prevInput,2) / Long.parseLong(input,2);
-			} else if (op.contentEquals("%")) {
-				result = Long.parseLong(prevInput,2) % Long.parseLong(input,2);
+				result = Long.parseLong(prevInput, 2) - Long.parseLong(input, 2);
+			} else if (op.contentEquals("\u00D7")) {
+				result = Long.parseLong(prevInput, 2) * Long.parseLong(input, 2);
+			} else if (op.contentEquals("\u00F7")) {
+				result = Long.parseLong(prevInput, 2) / Long.parseLong(input, 2);
+			} else if (op.contentEquals("Mod")) {
+				result = Long.parseLong(prevInput, 2) % Long.parseLong(input, 2);
 			} else if (op.contentEquals("+/-")) {
-				input = String.valueOf("" + (-1 * Long.parseLong(input)));
-			}	
+				if (input.isEmpty() && !stringResult.isEmpty()) {
+					result = -1 * Long.parseLong(stringResult, 2);
+				} else {
+					result = -1 * Long.parseLong(input, 2);
+				}
+				input = getResult();
+			}
 		}
 
-		if (op.contentEquals("=")) {
-			if (calc.isEmpty()) {
+		if (op.contentEquals("=")) {	
+			if (calc.isEmpty() && stringResult.contentEquals("0") && prevInput.contentEquals("0")) {
+				if (hex) {
+					result = Long.parseLong(input, 16);
+				} else if (bin) {
+					result = Long.parseLong(input, 2);
+				} else if (oct) {
+					result = Long.parseLong(input, 8);
+				} else if (dec) {
+					result = Long.parseLong(input);
+				}
+			} else if (calc.isEmpty()) {
 				prevInput = getResult();
 				performCalc(operator);
 			} else if (calc.substring(calc.length() - 1).contentEquals(operator) && input.isEmpty()) {
-
 				input = "0";
 				performCalc(operator);
 			} else if (calc.substring(calc.length() - 1).contentEquals(operator) && !input.isEmpty()) {
-
 				performCalc(operator);
 			}
-
-			equals = true;
-
 		}
 	}
 }
