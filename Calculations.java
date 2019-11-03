@@ -1,4 +1,3 @@
-
 public class Calculations {
 
 	private String input;
@@ -6,6 +5,10 @@ public class Calculations {
 	private long result;
 	private String stringResult;
 	private String calc;
+	private String calcHex;
+	private String calcDec;
+	private String calcOct;
+	private String calcBin;
 	private String operator;
 	private boolean equals;
 	private boolean hex;
@@ -17,14 +20,19 @@ public class Calculations {
 		input = "0";
 		prevInput = "0";
 		result = 0;
-		stringResult = "0";
+		stringResult = "";
 		calc = "";
+		calcHex = "";
+		calcDec = "";
+		calcOct = "";
+		calcBin = "";
 		operator = "";
 		equals = false;
 		hex = false;
 		dec = true;
 		oct = false;
 		bin = false;
+
 	}
 
 	public void setHex(boolean b) {
@@ -87,6 +95,38 @@ public class Calculations {
 		return calc;
 	}
 
+	public void setCalcHex(String s) {
+		calcHex = s;
+	}
+
+	public String getCalcHex() {
+		return calcHex;
+	}
+
+	public void setCalcDec(String s) {
+		calcDec = s;
+	}
+
+	public String getCalcDec() {
+		return calcDec;
+	}
+
+	public void setCalcOct(String s) {
+		calcOct = s;
+	}
+
+	public String getCalcOct() {
+		return calcOct;
+	}
+
+	public void setCalcBin(String s) {
+		calcBin = s;
+	}
+
+	public String getCalcBin() {
+		return calcBin;
+	}
+
 	public void setOperator(String s) {
 		operator = s;
 	}
@@ -101,6 +141,17 @@ public class Calculations {
 
 	public void storeCalc(String s) {
 		calc += s;
+	}
+
+	public void storeCalc(String s, int base) {
+		if (base == 16) {
+			calcHex += s;
+		} else if (base == 10) {
+			calcDec += s;
+		} else if (base == 8) {
+			calcOct += s;
+		} else if (base == 2)
+			calcBin += s;
 	}
 
 	public void setResult(String s) {
@@ -136,6 +187,7 @@ public class Calculations {
 		Long temp = 0L;
 		String tempStr = "";
 		if (base.contentEquals("hex")) {
+		
 			temp = Long.parseLong(s, 16);
 			if (newBase.contentEquals("dec")) {
 				tempStr = String.valueOf(temp);
@@ -148,13 +200,14 @@ public class Calculations {
 			temp = Long.parseLong(s);
 			if (newBase.contentEquals("hex")) {
 				tempStr = Long.toHexString(temp);
-				tempStr = tempStr.toUpperCase();
+				tempStr = tempStr.toUpperCase();		
 			} else if (newBase.contentEquals("bin")) {
 				tempStr = Long.toBinaryString(temp);
 			} else if (newBase.contentEquals("oct")) {
 				tempStr = Long.toOctalString(temp);
 			}
 		} else if (base.contentEquals("oct")) {
+
 			temp = Long.parseLong(s, 8);
 			if (newBase.contentEquals("dec")) {
 				tempStr = String.valueOf(temp);
@@ -191,8 +244,9 @@ public class Calculations {
 			} else if (op.contentEquals("Mod")) {
 				result = Long.parseLong(prevInput) % Long.parseLong(input);
 			} else if (op.contentEquals("+/-")) {
-				if (input.isEmpty() && !stringResult.isEmpty()) {
+				if (!stringResult.isEmpty() && !input.contentEquals("0")) {
 					input = String.valueOf("" + (-1 * Long.parseLong(stringResult)));
+					stringResult = input;
 				} else {
 					input = String.valueOf("" + (-1 * Long.parseLong(input)));
 				}
@@ -209,12 +263,17 @@ public class Calculations {
 			} else if (op.contentEquals("Mod")) {
 				result = Long.parseLong(prevInput, 16) % Long.parseLong(input, 16);
 			} else if (op.contentEquals("+/-")) {
-				if (input.isEmpty() && !stringResult.isEmpty()) {
-					result = -1 * Long.parseLong(stringResult, 16);
+				if (!stringResult.isEmpty() && !input.contentEquals("0")) {
+					System.out.println("here");
+					input = String.valueOf(-1 * Long.parseLong(stringResult, 16));
 				} else {
+					System.out.println("here2");
 					result = -1 * Long.parseLong(input, 16);
+					System.out.println(result);
+
 				}
 				input = getResult();
+				System.out.println(input);
 			}
 		} else if (oct) {
 			if (op.contentEquals("+")) {
@@ -256,7 +315,7 @@ public class Calculations {
 			}
 		}
 
-		if (op.contentEquals("=")) {	
+		if (op.contentEquals("=")) {
 			if (calc.isEmpty() && stringResult.contentEquals("0") && prevInput.contentEquals("0")) {
 				if (hex) {
 					result = Long.parseLong(input, 16);
